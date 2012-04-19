@@ -13,6 +13,9 @@ module Mailman
 
     # @return [String] the path to the maildir
     attr_accessor :maildir
+    
+    # @return [String] the path to the maildirs
+    attr_accessor :maildirs
 
     # @return [String] the path to the rails root. Setting this to nil stops
     #   rails environment loading

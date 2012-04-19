@@ -83,6 +83,19 @@ module Mailman
             process_maildir
           }
         end
+      elsif Mailman.config.maildirs
+        require 'maildir'
+        require 'fssm'
+
+        Mailman.logger.info "Maildirs receiver enabled (#{Mailman.config.maildirs})."
+
+        Mailman.logger.debug "Monitoring the Maildirs for new messages..."
+        FSSM.monitor Mailman.config.maildirs, '**/new/*' do |monitor|
+          monitor.create { |directory, filename|
+            Mailman.logger.debug "#{filename} - file funded!"
+            process_mail_on_dir( filename.partition('/').first )
+          }
+        end
       end
     end
 
@@ -93,6 +106,16 @@ module Mailman
       # Process messages queued in the new directory
       Mailman.logger.debug "Processing new message queue..."
       @maildir.list(:new).each do |message|
+        @processor.process_maildir_message(message)
+      end
+    end
+
+    ##
+    def process_mail_on_dir( mdir )
+      # Process messages queued in the new directory
+      Mailman.logger.debug "Processing new message queue..."
+      maildir = Maildir.new(Mailman.config.maildirs.concat("/#{mdir}"))
+      maildir.list(:new).each do |message|
         @processor.process_maildir_message(message)
       end
     end
