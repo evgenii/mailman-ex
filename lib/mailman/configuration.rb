@@ -28,8 +28,8 @@ module Mailman
     attr_accessor :graceful_death
 
   def initialize(options = {})
-    options.each_with_key do |key, val|
-      self.send(key, val)
+    options.eachdo |key, val|
+      self.instance_variable_set("@#{key.to_s}", val)
     end unless options.blank?
   end
 
