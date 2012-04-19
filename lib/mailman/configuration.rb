@@ -27,6 +27,12 @@ module Mailman
     # connections.
     attr_accessor :graceful_death
 
+  def initialize(options = {})
+    options.each_with_key do |key, val|
+      self.send(key, val)
+    end unless options.blank?
+  end
+
     def logger
       @logger ||= Logger.new(STDOUT)
     end
@@ -38,6 +44,6 @@ module Mailman
     def rails_root
       @rails_root ||= '.'
     end
-
+    
   end
 end
