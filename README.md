@@ -1,22 +1,4 @@
-#mailman-ex
-
-Extension for mailman gem
-New features:
-
- * configure mailman at one place
-
-    Mailman.config {
-      :logger => Logger.new('log/mailman.log'),
-      :pool_interval => 30,
-      :pop3 => {
-        :server   => 'localhost',
-        :username => 'admin@example.com',
-        :password => 'password',
-      }
-    }
-
-
-# Mailman - original description
+# Mailman
 
 Mailman is an incoming mail processing microframework (with POP3 and Maildir
 support), that works with Rails "out of the box".
