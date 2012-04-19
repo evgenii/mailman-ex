@@ -15,6 +15,10 @@ New features:
       }
     }
 
+  * Add new type of geting mail - Maildirs - the same as Maildir but for domain at all
+  
+    Mailman.config.maildirs = '/home/vmail/domain1'
+    this will monitoring all messages for domain1 (like: '/home/vmail/domain1/**/new/*' )
 
 # Mailman
 
