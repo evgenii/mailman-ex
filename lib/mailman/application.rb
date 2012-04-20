@@ -93,7 +93,7 @@ module Mailman
         FSSM.monitor Mailman.config.maildirs, '**/new/*' do |monitor|
           monitor.create { |directory, filename|
             Mailman.logger.debug "#{filename} - file funded!"
-            process_mail_on_dir( filename.partition('/').first )
+            process_mail_on_dir( filename.partition('/new/').first )
           }
         end
       end
@@ -114,7 +114,7 @@ module Mailman
     def process_mail_on_dir( mdir )
       # Process messages queued in the new directory
       Mailman.logger.debug "Processing new message queue..."
-      maildir = Maildir.new(Mailman.config.maildirs.concat("/#{mdir}"))
+      maildir = Maildir.new( Mailman.config.maildirs + "/#{mdir}" )
       maildir.list(:new).each do |message|
         @processor.process_maildir_message(message)
       end
