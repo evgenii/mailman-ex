@@ -76,6 +76,9 @@ module Mailman
 
         Mailman.logger.info "Maildir receiver enabled (#{Mailman.config.maildir})."
         @maildir = Maildir.new(Mailman.config.maildir)
+        
+        Mailman.logger.info "Checking new mails"
+        process_maildir if Dir.glob(Mailman.config.maildir+"/new/*").size > 0
 
         Mailman.logger.debug "Monitoring the Maildir for new messages..."
         FSSM.monitor File.join(Mailman.config.maildir, 'new') do |monitor|
@@ -88,6 +91,13 @@ module Mailman
         require 'fssm'
 
         Mailman.logger.info "Maildirs receiver enabled (#{Mailman.config.maildirs})."
+
+        Mailman.logger.info "Checking new mails"
+        Dir.glob(Mailman.config.maildirs+'/*').each do |acount_dir|
+          if Dir.glob(acount_dir + '/new/*').size > 0
+            process_mail_on_dir( acount_dir.gsub(Mailman.config.maildirs,'').partition('/new/').first )
+          end
+        end
 
         Mailman.logger.debug "Monitoring the Maildirs for new messages..."
         FSSM.monitor Mailman.config.maildirs, '**/new/*' do |monitor|
@@ -104,7 +114,7 @@ module Mailman
     #
     def process_maildir
       # Process messages queued in the new directory
-      Mailman.logger.debug "Processing new message queue..."
+      Mailman.logger.debug "- Processing new message queue..."
       @maildir.list(:new).each do |message|
         @processor.process_maildir_message(message)
       end
@@ -113,7 +123,7 @@ module Mailman
     ##
     def process_mail_on_dir( mdir )
       # Process messages queued in the new directory
-      Mailman.logger.debug "Processing new message queue..."
+      Mailman.logger.debug "- Processing new message queue on #{mdir} ..."
       maildir = Maildir.new( Mailman.config.maildirs + "/#{mdir}" )
       maildir.list(:new).each do |message|
         @processor.process_maildir_message(message)
